@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using AutoMapper;
 using System.Collections.Generic;
+using System.Security.Claims;
+using System.Security.Claims;
+using System.Security.Claims;
 
 namespace DatingApp.API.Controllers
 {
@@ -36,6 +39,16 @@ namespace DatingApp.API.Controllers
             var user = await _datingRepo.GetUser(id);
             UserForDetailedDto userToReturn = _mapper.Map<UserForDetailedDto>(user);
             return Ok(userToReturn);
+        }
+
+        [HttpPut("{id}")]System.Security.Claims.
+        public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userForUpdateDto)
+        {
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+                
+            }
         }
     }
 }
