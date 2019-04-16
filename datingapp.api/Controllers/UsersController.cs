@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Security.Claims;
-using System.Security.Claims;
 using System;
 
 namespace DatingApp.API.Controllers
