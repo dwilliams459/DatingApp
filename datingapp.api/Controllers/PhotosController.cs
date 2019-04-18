@@ -15,7 +15,7 @@ using Microsoft.Extensions.Options;
 namespace DatingApp.API.Controllers
 {
     [Authorize]
-    [Route("api/user/{userId}")]
+    [Route("api/users/{userId}/photos")]
     [ApiController]
     public class PhotosController : ControllerBase
     {
@@ -32,8 +32,9 @@ namespace DatingApp.API.Controllers
 
             Account acc = new Account(
                 _cloudinaryConfig.Value.CloudName,
-                _cloudinaryConfig.Value.ApiSecret,
-                _cloudinaryConfig.Value.ApiKey
+                _cloudinaryConfig.Value.ApiKey,
+                _cloudinaryConfig.Value.ApiSecret
+
             );
 
             _cloudinary = new Cloudinary(acc);
@@ -49,12 +50,11 @@ namespace DatingApp.API.Controllers
             return Ok(photo);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddPhotoForUser(int userId, PhotoForCreationDto photoForCreationDto) 
+        public async Task<IActionResult> AddPhotoForUser(int userId, [FromForm]PhotoForCreationDto photoForCreationDto)
         {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             {
-                return Unauthorized();                
+                return Unauthorized();
             }
 
             var userFromRepo = await _datingRepo.GetUser(userId);
@@ -68,9 +68,9 @@ namespace DatingApp.API.Controllers
                 {
                     var uploadParams = new ImageUploadParams()
                     {
-                        File=new FileDescription(file.Name, stream),
+                        File = new FileDescription(file.Name, stream),
                         Transformation = new Transformation()
-                            .Width(500).Height(500).Crop("fill").Gravity("face")
+                            .Width(150).Height(150).Crop("fill").Gravity("face")
                     };
 
                     uploadResults = _cloudinary.Upload(uploadParams);
@@ -92,10 +92,41 @@ namespace DatingApp.API.Controllers
             if (await _datingRepo.SaveAll())
             {
                 var photoToReturn = _mapper.Map<PhotoForReturnDto>(photo);
-                return CreatedAtRoute("GetPhoto", new { id = photo.Id}, photoToReturn);
+                return CreatedAtRoute("GetPhoto", new { id = photo.Id }, photoToReturn);
             }
 
             return BadRequest("Could not add photo");
+        }
+
+        [HttpPost("{id}/setMain")]
+        public async Task<IActionResult> SetMainPhoto(int userId, int id)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var user = await _datingRepo.GetUser(userId);
+            if (!user.Photos.Any(p => p.Id == id))
+            {
+                return Unauthorized();
+            }
+
+            var photoFromRepo = await _datingRepo.GetPhoto(id);
+            if (photoFromRepo.IsMain)
+            {
+                return this.Ok(); //Bad Request("..");
+            }
+
+            var currentMainPhoto = await _datingRepo.GetMainPhotoForUser(userId);
+            currentMainPhoto.IsMain = false;
+            photoFromRepo.IsMain = true;
+
+            if (await _datingRepo.SaveAll())
+            {
+                return NoContent();
+            }
+            return BadRequest("Could not set..");
         }
 
     }
