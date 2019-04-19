@@ -129,5 +129,35 @@ namespace DatingApp.API.Controllers
             return BadRequest("Could not set..");
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePhoto(int userId, int id)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var user = await _datingRepo.GetUser(userId);
+            if (!user.Photos.Any(p => p.Id == id))
+            {
+                return Unauthorized();
+            }
+
+            var photoFromRepo = await _datingRepo.GetPhoto(id);
+            if (photoFromRepo.IsMain)
+            {
+                return this.BadRequest("Can't delete main photo");
+            }
+
+            _datingRepo.Delete(photoFromRepo);
+
+            if (await _datingRepo.SaveAll())
+            {
+                return Ok();
+            }
+
+            return BadRequest("Failed to delete photo");
+        }
+
     }
 }
