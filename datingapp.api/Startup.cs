@@ -49,6 +49,7 @@ namespace DatingApp.API
             services.AddAutoMapper();
             services.AddTransient<Seed>();
             services.AddScoped<IDatingRepository, DatingRepository>();
+            services.AddScoped<LogUserActivity>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {

@@ -6,6 +6,7 @@ import { BsDropdownModule, TabsModule, BsDatepickerModule } from 'ngx-bootstrap'
 import { RouterModule } from '@angular/router';
 import { JwtModule } from '@auth0/angular-jwt';
 import { FileUploadModule } from 'ng2-file-upload';
+import {TimeAgoPipe} from 'time-ago-pipe';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
@@ -31,7 +32,6 @@ import { PreventUnsavedChanges } from './_guards/prevent-unsaved-changes-gaurd';
 import { PhotoEditComponent } from './members/photo-edit/photo-edit.component';
 
 
-
 export function tokenGetter() {
    return localStorage.getItem('token');
 }
@@ -48,7 +48,8 @@ export function tokenGetter() {
       MemberCardComponent,
       MemberDetailComponent,
       MembersEditComponent,
-      PhotoEditComponent
+      PhotoEditComponent,
+      TimeAgoPipe
    ],
    imports: [
       BrowserModule,
