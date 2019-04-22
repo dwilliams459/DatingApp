@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BsDropdownModule, TabsModule } from 'ngx-bootstrap';
+import { BsDropdownModule, TabsModule, BsDatepickerModule } from 'ngx-bootstrap';
 import { RouterModule } from '@angular/router';
 import { JwtModule } from '@auth0/angular-jwt';
 import { FileUploadModule } from 'ng2-file-upload';
@@ -31,6 +31,7 @@ import { PreventUnsavedChanges } from './_guards/prevent-unsaved-changes-gaurd';
 import { PhotoEditComponent } from './members/photo-edit/photo-edit.component';
 
 
+
 export function tokenGetter() {
    return localStorage.getItem('token');
 }
@@ -57,6 +58,7 @@ export function tokenGetter() {
       BsDropdownModule.forRoot(),
       RouterModule.forRoot(appRoutes),
       NgxGalleryModule,
+      BsDatepickerModule.forRoot(),
       JwtModule .forRoot(
          {
             config: {
